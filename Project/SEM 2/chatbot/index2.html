@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HealthBot</title>
+  <style>
+    .chatbot-card {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 350px;
+      max-height: 500px;
+      background-color: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.2);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Segoe UI', sans-serif;
+      z-index: 1000;
+    }
+    .chatbot-header {
+      background-color: #0066cc;
+      color: white;
+      padding: 16px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .chatbot-body {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+    }
+    .chat-message {
+      margin-bottom: 10px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      max-width: 80%;
+    }
+    .chat-message.bot {
+      background-color: #e0efff;
+      color: #003d80;
+      align-self: flex-start;
+    }
+    .chat-message.user {
+      background-color: #0066cc;
+      color: white;
+      align-self: flex-end;
+    }
+    .chatbot-input {
+      display: flex;
+      border-top: 1px solid #ddd;
+      background-color: white;
+      padding: 10px;
+    }
+    .chatbot-input input {
+      flex: 1;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      padding: 10px 15px;
+      outline: none;
+    }
+    .chatbot-input button {
+      background-color: #0066cc;
+      border: none;
+      color: white;
+      margin-left: 10px;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .chatbot-input button:hover {
+      background-color: #004c99;
+    }
+  </style>
+</head>
+<body>
+  <div class="chatbot-card">
+    <div class="chatbot-header">HealthBot</div>
+    <div class="chatbot-body" id="chatBody">
+      <div class="chat-message bot">Hello! I'm your Health Assistant. Ask me anything!</div>
+    </div>
+    <div class="chatbot-input">
+      <input type="text" id="prompt" placeholder="Type your message..." />
+      <button id="submit">➤</button>
+    </div>
+  </div>
+
+  <script src="bot.js"></script>
+</body>
+</html>

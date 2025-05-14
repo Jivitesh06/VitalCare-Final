@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Info - VitalCare</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="sos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:,">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #333;
+        }
+        .medicine-info {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #e6f0ff 0%, #f8faff 100%);
+            min-height: 100vh;
+            position: relative;
+            margin-top: 60px; /* Offset for fixed navbar */
+        }
+
+        .search-form {
+            background-color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 35px rgba(0, 102, 204, 0.2);
+            text-align: center;
+            transform: translateY(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .search-form:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 45px rgba(0, 102, 204, 0.3);
+        }
+        .section-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: #003366;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .search-form p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        .search-box {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+        .search-box .input-group {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+        .search-box input[type="text"] {
+            flex: 1;
+            max-width: 500px;
+            padding: 15px 20px;
+            border: 2px solid #e0e7ff;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+        }
+        .search-box input[type="text"]:focus {
+            border-color: #0066cc;
+            box-shadow: 0 0 10px rgba(0, 102, 204, 0.2);
+        }
+        .search-box input[type="file"] {
+            padding: 10px;
+            border: 2px solid #e0e7ff;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+            background: #f8faff;
+            width: 100%;
+            max-width: 500px;
+        }
+        .search-box input[type="file"]:focus {
+            border-color: #0066cc;
+            box-shadow: 0 0 10px rgba(0, 102, 204, 0.2);
+        }
+        .search-box button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #0066cc, #0052a3);
+            border: none;
+            color: white;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .search-box button:hover {
+            background: linear-gradient(135deg, #0052a3, #003d7a);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 102, 204, 0.3);
+        }
+        .image-preview {
+            margin-top: 20px;
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 10px;
+            display: none;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            display: none;
+            animation: fadeIn 0.6s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .medicine-details h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #0066cc;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: capitalize;
+        }
+        .info-section {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f8faff;
+            transition: all 0.3s ease;
+        }
+        .info-section-header {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #0066cc, #0052a3);
+            color: white;
+            font-size: 1.2rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+        .info-section-header:hover {
+            background: linear-gradient(135deg, #0052a3, #003d7a);
+            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.2);
+        }
+        .info-section-header i {
+            transition: transform 0.4s ease;
+        }
+        .info-section-header.active i {
+            transform: rotate(180deg);
+        }
+        .info-section-content {
+            padding: 20px;
+            display: none;
+            border: 1px solid #e0e7ff;
+            border-top: none;
+            animation: slideDown 0.4s ease;
+        }
+        .info-section-content.active {
+            display: block;
+        }
+        @keyframes slideDown {
+            from { height: 0; opacity: 0; }
+            to { height: auto; opacity: 1; }
+        }
+        .info-section-content p, .info-section-content ul {
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            color: #333;
+            line-height: 1.4;
+            margin: 0;
+        }
+        .info-section-content ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .info-section-content li {
+            padding: 3px 0;
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .info-section-content li::before {
+            content: '\f0da';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: #0066cc;
+        }
+        .warning {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 8px;
+            color: #856404;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            animation: fadeIn 0.6s ease;
+        }
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px 15px;
+            background: #e1ecf9;
+            border-radius: 20px;
+            width: fit-content;
+        }
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #0066cc;
+            border-radius: 50%;
+            margin: 0 3px;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+        /* Responsive adjustments for medicine-info section */
+        @media (max-width: 768px) {
+            .medicine-info {
+                padding: 60px 0;
+            }
+            .search-form {
+                padding: 30px;
+            }
+            .section-title {
+                font-size: 1.8rem;
+            }
+            .search-box .input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-box input[type="text"],
+            .search-box input[type="file"] {
+                max-width: 100%;
+            }
+        }
+        @media (max-width: 480px) {
+            .medicine-info {
+                padding: 40px 0;
+            }
+            .search-form {
+                padding: 20px;
+            }
+            .section-title {
+                font-size: 1.5rem;
+            }
+            .search-form p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+  <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="login-logo logo">
+                <i class="fas fa-heartbeat"></i>
+                VitalCare
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="health-check.html" class="active">Health Check</a></li>
+                <li><a href="medicine-info.html">Medicine Info</a></li>
+                <li><a href="reminders.html">Reminders</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li id="authLink"></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="medicine-info">
+        <div class="container">
+            <div class="search-form">
+                <h2 class="section-title">Medicine Information</h2>
+                <p>Explore concise information about any medicine or salt with Dr. Vita's guidance. Search by name or upload a photo of the medicine.</p>
+                
+                <div class="search-box">
+                    <div class="input-group">
+                        <input type="text" id="medicineName" placeholder="Enter medicine name or salt (e.g., Paracetamol, Disprin)">
+                        <button onclick="searchMedicine()" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                    <div class="input-group">
+                        <input type="file" id="medicineImage" accept="image/jpeg,image/png" placeholder="Upload medicine photo">
+                        <button onclick="analyzeMedicineImage()" class="btn btn-primary">
+                            <i class="fas fa-camera"></i> Analyze Image
+                        </button>
+                    </div>
+                    <img id="imagePreview" class="image-preview" alt="Image Preview">
+                </div>
+
+                <div id="result" class="result">
+                    <div id="medicineDetails" class="medicine-details"></div>
+                    <div class="warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Note: This information is for reference only. Always consult your doctor and read the medicine leaflet.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>VitalCare</h3>
+                    <p>Your personal health companion</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="health-check.html">Health Check</a></li>
+                        <li><a href="medicine-info.html">Medicine Info</a></li>
+                        <li><a href="reminders.html">Reminders</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p>Email: vitalcare.alert@gmail.com</p>
+                    <p>Phone: +1 234 567 890</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 VitalCare. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+<script>
+    // IMPORTANT: API keys are exposed in client-side code, which is insecure.
+    // In production, move API calls to a secure backend server and proxy requests.
+
+    // API Keys (Move to backend in production)
+    const GEMINI_API_KEY = 'AIzaSyBhNWn2lnOOC8Gu6wdWGV8EleRqEAFVxIs';
+    const BREVO_API_KEY = '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'; // Replace with your actual Brevo API key
+
+    // Auth Logic
+    const authLink = document.getElementById('authLink');
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    if (currentUser.email) {
+        authLink.innerHTML = '<a href="profile.html">Profile</a>';
+    } else {
+        authLink.innerHTML = '<a href="login.html" class="btn btn-primary">Login / SignUp</a>';
+    }
+
+    // Load SOS HTML
+    async function loadSosComponents() {
+        try {
+            const response = await fetch('sos.html');
+            if (!response.ok) {
+                throw new Error(`Failed to load sos.html: ${response.status} ${response.statusText}`);
+            }
+            const sosHtml = await response.text();
+            const parser = new DOMParser();
+            const sosDoc = parser.parseFromString(sosHtml, 'text/html');
+            
+            // Append SOS elements to body
+            document.body.appendChild(sosDoc.getElementById('sosButton'));
+            document.body.appendChild(sosDoc.getElementById('emergencyModal'));
+            document.body.appendChild(sosDoc.getElementById('toastNotification'));
+
+            // Initialize SOS functionality
+            initializeSos();
+        } catch (error) {
+            console.error('Error loading SOS components:', error);
+            console.log('Fetch URL attempted:', new URL('sos.html', window.location.origin).href);
+            alert('Failed to load emergency SOS feature. Check console for details.');
+        }
+    }
+
+    // SOS Functionality
+    function initializeSos() {
+        const sosButton = document.getElementById('sosButton');
+        const emergencyModal = document.getElementById('emergencyModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelSos = document.getElementById('cancelSos');
+        const sendSosBtn = document.getElementById('sendSosBtn');
+        const addContactBtn = document.getElementById('addContactBtn');
+        const contactList = document.getElementById('contactList');
+        const emergencyMessage = document.getElementById('emergencyMessage');
+        const toastNotification = document.getElementById('toastNotification');
+        const toastMessage = document.getElementById('toastMessage');
+
+        // Check if SOS elements loaded
+        if (!sosButton || !emergencyModal || !toastNotification) {
+            console.error('SOS elements not found. Ensure sos.html loaded correctly.');
+            return;
+        }
+
+        let emergencyContacts = JSON.parse(localStorage.getItem('emergencyContacts') || '[]');
+
+        sosButton.addEventListener('click', () => {
+            emergencyModal.style.display = 'flex';
+            emergencyMessage.value = "I need immediate assistance. This is an emergency alert.";
+            renderEmergencyContacts();
+        });
+
+        closeModal.addEventListener('click', () => {
+            emergencyModal.style.display = 'none';
+        });
+
+        cancelSos.addEventListener('click', () => {
+            emergencyModal.style.display = 'none';
+        });
+
+        addContactBtn.addEventListener('click', () => {
+            const name = prompt('Enter contact name:');
+            if (name) {
+                const email = prompt('Enter contact email:');
+                if (email && validateEmail(email)) {
+                    emergencyContacts.push({ name, email });
+                    localStorage.setItem('emergencyContacts', JSON.stringify(emergencyContacts));
+                    renderEmergencyContacts();
+                } else {
+                    showToast('Please enter a valid email address.', true);
+                }
+            }
+        });
+
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function renderEmergencyContacts() {
+            contactList.innerHTML = '';
+            
+            if (emergencyContacts.length === 0) {
+                const emptyMessage = document.createElement('p');
+                emptyMessage.textContent = 'No emergency contacts added yet. Add contacts to use the SOS feature.';
+                emptyMessage.style.color = '#666';
+                emptyMessage.style.fontStyle = 'italic';
+                contactList.appendChild(emptyMessage);
+                return;
+            }
+            
+            emergencyContacts.forEach((contact, index) => {
+                const contactItem = document.createElement('div');
+                contactItem.classList.add('contact-item');
+                
+                const contactInfo = document.createElement('div');
+                contactInfo.classList.add('contact-info');
+                
+                const contactName = document.createElement('div');
+                contactName.classList.add('contact-name');
+                contactName.textContent = contact.name;
+                
+                const contactEmail = document.createElement('div');
+                contactEmail.classList.add('contact-email');
+                contactEmail.textContent = contact.email;
+                
+                contactInfo.appendChild(contactName);
+                contactInfo.appendChild(contactEmail);
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.classList.add('remove-contact');
+                removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                removeBtn.addEventListener('click', () => {
+                    removeEmergencyContact(index);
+                });
+                
+                contactItem.appendChild(contactInfo);
+                contactItem.appendChild(removeBtn);
+                
+                contactList.appendChild(contactItem);
+            });
+        }
+
+        function removeEmergencyContact(index) {
+            emergencyContacts.splice(index, 1);
+            localStorage.setItem('emergencyContacts', JSON.stringify(emergencyContacts));
+            renderEmergencyContacts();
+        }
+
+        sendSosBtn.addEventListener('click', async () => {
+            if (emergencyContacts.length === 0) {
+                showToast('Please add at least one emergency contact first.', true);
+                return;
+            }
+            
+            try {
+                sendSosBtn.innerHTML = '<div class="loading-spinner"></div> Sending...';
+                sendSosBtn.disabled = true;
+                
+                const position = await getCurrentPosition();
+                const { latitude, longitude } = position.coords;
+                
+                const locationName = await getLocationName(latitude, longitude);
+                
+                const emergencyData = {
+                    message: emergencyMessage.value || "I need immediate assistance. This is an emergency alert.",
+                    location: {
+                        latitude,
+                        longitude,
+                        locationName
+                    },
+                    contacts: emergencyContacts,
+                    user: currentUser.name || 'VitalCare User'
+                };
+                
+                // Create Google Maps link
+                const mapsLink = `https://www.google.com/maps?q=${emergencyData.location.latitude},${emergencyData.location.longitude}`;
+                
+                // Email HTML content
+                const emailHtml = `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ff4757; border-radius: 10px;">
+                        <div style="background-color: #ff4757; color: white; padding: 15px; border-radius: 8px 8px 0 0; text-align: center;">
+                            <h1 style="margin: 0;">⚠️ EMERGENCY ALERT ⚠️</h1>
+                        </div>
+                        <div style="padding: 20px; background-color: #f8f8f8; border-radius: 0 0 8px 8px;">
+                            <p style="font-size: 16px; color: #333;"><strong>${emergencyData.user}</strong> has sent an emergency alert and needs immediate assistance!</p>
+                            <div style="background-color: white; border-left: 4px solid #ff4757; padding: 15px; margin: 15px 0; border-radius: 4px;">
+                                <p style="margin: 0; color: #333;"><strong>Message:</strong> ${emergencyData.message}</p>
+                            </div>
+                            <div style="margin: 20px 0;">
+                                <h3 style="color: #333; margin-bottom: 10px;">📍 Location Information:</h3>
+                                <p style="margin: 5px 0; color: #555;"><strong>Address:</strong> ${emergencyData.location.locationName}</p>
+                                <p style="margin: 5px 0; color: #555;"><strong>Coordinates:</strong> ${emergencyData.location.latitude}, ${emergencyData.location.longitude}</p>
+                                <a href="${mapsLink}" style="display: block; background-color: #0066cc; color: white; text-align: center; padding: 12px; border-radius: 5px; text-decoration: none; margin: 15px 0; font-weight: bold;">View on Google Maps</a>
+                            </div>
+                            <div style="background-color: #fff3f3; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                                <p style="color: #ff4757; font-weight: bold; margin: 0 0 10px 0;">IMPORTANT:</p>
+                                <p style="margin: 0; color: #333;">This is an emergency situation. Please contact the person immediately or alert appropriate emergency services if needed.</p>
+                            </div>
+                            <p style="color: #777; font-size: 12px; margin-top: 30px; text-align: center;">This alert was sent via VitalCare Emergency SOS system on ${new Date().toLocaleString()}</p>
+                        </div>
+                    </div>
+                `;
+                
+                // Send emails to all contacts using Brevo API
+                const emailPromises = emergencyData.contacts.map(contact => {
+                    return fetch('https://api.brevo.com/v3/smtp/email', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'api-key': BREVO_API_KEY
+                        },
+                        body: JSON.stringify({
+                            sender: {
+                                email: "vitalcare.alert@gmail.com",
+                                name: "VitalCare Emergency"
+                            },
+                            to: [{
+                                email: contact.email,
+                                name: contact.name
+                            }],
+                            subject: `EMERGENCY ALERT: ${emergencyData.user} needs immediate assistance!`,
+                            htmlContent: emailHtml,
+                            headers: {
+                                'X-Priority': '1',
+                                'X-MSMail-Priority': 'High',
+                                'Importance': 'High'
+                            }
+                        })
+                    });
+                });
+                
+                // Wait for all emails to be sent
+                const responses = await Promise.all(emailPromises);
+                const failedResponses = responses.filter(res => !res.ok);
+                
+                if (failedResponses.length > 0) {
+                    // Log failed responses for debugging
+                    const errors = await Promise.all(failedResponses.map(res => res.json()));
+                    console.error('Failed email responses:', errors);
+                    throw new Error('Some emails failed to send');
+                }
+                
+                sendSosBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Emergency Alert';
+                sendSosBtn.disabled = false;
+                
+                emergencyModal.style.display = 'none';
+                showToast(`Emergency alert sent successfully to ${emergencyData.contacts.length} contacts!`);
+                
+                logEmergency(emergencyData);
+            } catch (error) {
+                console.error('Error sending SOS alert:', error);
+                sendSosBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Emergency Alert';
+                sendSosBtn.disabled = false;
+                showToast('Error sending emergency alert: ' + (error.message || 'Unknown error'), true);
+            }
+        });
+
+        function getCurrentPosition() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject(new Error('Geolocation is not supported by your browser'));
+                    return;
+                }
+                
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                });
+            });
+        }
+
+        async function getLocationName(latitude, longitude) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`);
+                const data = await response.json();
+                
+                if (data && data.display_name) {
+                    return data.display_name;
+                } else {
+                    return 'Unknown location';
+                }
+            } catch (error) {
+                console.error('Error getting location name:', error);
+                return 'Unknown location';
+            }
+        }
+
+        function logEmergency(emergencyData) {
+            const emergencyLogs = JSON.parse(localStorage.getItem('emergencyLogs') || '[]');
+            emergencyLogs.push({
+                ...emergencyData,
+                id: Date.now().toString()
+            });
+            localStorage.setItem('emergencyLogs', JSON.stringify(emergencyLogs));
+        }
+
+        function showToast(message, isError = false) {
+            toastMessage.textContent = message;
+            
+            if (isError) {
+                toastNotification.classList.add('error');
+                toastNotification.querySelector('i').className = 'fas fa-exclamation-circle';
+            } else {
+                toastNotification.classList.remove('error');
+                toastNotification.querySelector('i').className = 'fas fa-check-circle';
+            }
+            
+            toastNotification.classList.add('show');
+            
+            setTimeout(() => {
+                toastNotification.classList.remove('show');
+            }, 3000);
+        }
+    }
+
+    // Load SOS components on page load
+    window.addEventListener('load', loadSosComponents);
+
+    // Local Medicine Database
+    const medicineDatabase = {
+        'paracetamol': {
+            details: 'Paracetamol is a widely used analgesic and antipyretic. It helps relieve mild to moderate pain and reduce fever.',
+            dosage: 'Adults can take 500-1000 mg every 4-6 hours as needed. Do not exceed 4000 mg in 24 hours. Follow your doctor’s instructions.',
+            uses: ['Pain relief', 'Fever reduction', 'Headache', 'Muscle aches', 'Menstrual cramps'],
+            warnings: ['Risk of liver damage in overdose', 'Avoid alcohol consumption', 'May cause allergic reactions', 'Consult a doctor if symptoms persist']
+        },
+        'metformin': {
+            details: 'Metformin is an oral antidiabetic drug used to control blood sugar in type 2 diabetes. It enhances insulin sensitivity and reduces glucose production.',
+            dosage: 'Adults typically start with 500 mg twice daily with meals. The dose may increase to 2000-2500 mg daily as prescribed. Take with food to minimize stomach upset.',
+            uses: ['Type 2 diabetes management', 'Polycystic ovary syndrome', 'Blood sugar control'],
+            warnings: ['Risk of lactic acidosis in rare cases', 'Avoid in severe kidney disease', 'May cause gastrointestinal upset', 'Consult a doctor before use']
+        },
+        'amoxicillin': {
+            details: 'Amoxicillin is a penicillin-type antibiotic that treats bacterial infections. It inhibits bacterial cell wall synthesis.',
+            dosage: 'Adults typically take 250-500 mg every 8 hours or 500-875 mg every 12 hours. Dosage varies by infection type. Complete the full course as prescribed.',
+            uses: ['Ear infections', 'Sinusitis', 'Urinary tract infections', 'Pneumonia', 'Skin infections'],
+            warnings: ['May cause allergic reactions', 'Complete the full course to prevent resistance', 'Diarrhea is a common side effect', 'Not effective against viral infections']
+        },
+        'ibuprofen': {
+            details: 'Ibuprofen is a nonsteroidal anti-inflammatory drug (NSAID) that relieves pain and reduces inflammation. It is commonly used for various pain conditions.',
+            dosage: 'Adults can take 200-400 mg every 4-6 hours as needed. Do not exceed 3200 mg in 24 hours. Take with food to reduce stomach irritation.',
+            uses: ['Pain relief', 'Inflammation reduction', 'Fever reduction', 'Arthritis', 'Menstrual cramps'],
+            warnings: ['May cause stomach upset or bleeding', 'Avoid in patients with kidney disease', 'Risk of heart issues with long-term use', 'Consult a doctor before use']
+        },
+        'aspirin': {
+            details: 'Aspirin is an NSAID used to relieve pain and reduce inflammation. It is also used to prevent blood clots in cardiovascular conditions.',
+            dosage: 'For pain, adults can take 325-650 mg every 4-6 hours as needed. For heart protection, 75-100 mg daily is common. Follow your doctor’s guidance.',
+            uses: ['Pain relief', 'Fever reduction', 'Anti-inflammatory', 'Heart attack prevention', 'Stroke prevention'],
+            warnings: ['Risk of stomach bleeding', 'Avoid in children with viral infections', 'May cause allergic reactions', 'Consult a doctor before use']
+        },
+        'disprin': {
+            details: 'Disprin is a brand of aspirin, an NSAID used for pain relief and anti-inflammatory effects. It also helps prevent blood clots in cardiovascular conditions.',
+            dosage: 'For pain, adults can take 300-600 mg every 4-6 hours as needed. For heart protection, 75-150 mg daily is typical. Dissolve in water and take as prescribed.',
+            uses: ['Pain relief', 'Fever reduction', 'Headache', 'Heart attack prevention', 'Stroke prevention'],
+            warnings: ['Risk of stomach bleeding', 'Avoid in children with viral infections', 'Allergic reactions possible', 'Consult a doctor if pregnant or breastfeeding']
+        },
+        'lisinopril': {
+            details: 'Lisinopril is an ACE inhibitor used to treat high blood pressure and heart failure. It helps relax blood vessels to improve blood flow.',
+            dosage: 'Adults typically start with 10 mg once daily. The dose may be adjusted to 20-40 mg daily based on condition. Take as prescribed by your doctor.',
+            uses: ['Hypertension', 'Heart failure', 'Post-heart attack recovery'],
+            warnings: ['May cause dizziness', 'Risk of kidney issues', 'Avoid during pregnancy', 'Monitor blood pressure regularly']
+        },
+        'azithromycin': {
+            details: 'Azithromycin is a macrolide antibiotic used to treat bacterial infections. It works by stopping bacterial growth.',
+            dosage: 'Adults typically take 500 mg on day 1, then 250 mg daily for 4 days. Dosage varies by infection. Complete the full course as prescribed.',
+            uses: ['Respiratory infections', 'Skin infections', 'Ear infections', 'Sexually transmitted infections'],
+            warnings: ['May cause QT prolongation', 'Diarrhea is a common side effect', 'Avoid in patients with liver issues', 'Consult a doctor before use']
+        },
+        'cetirizine': {
+            details: 'Cetirizine is an antihistamine used to relieve allergy symptoms. It blocks histamine to reduce itching and sneezing.',
+            dosage: 'Adults typically take 10 mg once daily. The dose may be taken with or without food. Follow your doctor’s instructions.',
+            uses: ['Allergic rhinitis', 'Urticaria', 'Itching', 'Sneezing'],
+            warnings: ['May cause drowsiness', 'Avoid alcohol consumption', 'Use caution when driving', 'Consult a doctor before use']
+        }
+    };
+
+    // Healthcare Personality for Dr. Vita
+    const healthcarePersonality = `You are Dr. Vita, a highly knowledgeable and empathetic healthcare virtual assistant specializing in medication information.
+
+    PERSONALITY TRAITS:
+    - Deeply empathetic: Show genuine care and understanding for health-related queries
+    - Precise and reliable: Provide accurate, concise, and trustworthy medical information
+    - Professional yet approachable: Balance expertise with a friendly, reassuring tone
+    - Patient-focused: Prioritize clear, helpful responses tailored to user needs
+
+    COMMUNICATION STYLE:
+    - Deliver concise, structured answers:
+      - details: 1-2 sentences on the medicine's purpose
+      - dosage: 2-3 sentences on adult dosage instructions
+      - uses: 2-5 conditions/symptoms treated
+      - warnings: 2-5 precautions/side effects
+    - Use clear, compassionate language
+    - Avoid medical jargon; ensure responses are easy to understand
+    - Do NOT include greetings or closing remarks
+
+    GUIDELINES:
+    - Provide information in a structured JSON format with four fields:
+      - details: Brief description of the medicine or salt's purpose (1-2 sentences)
+      - dosage: Typical dosage instructions for adults (2-3 sentences, only dosage information)
+      - uses: Array of 2-5 conditions/symptoms the medicine treats
+      - warnings: Array of 2-5 precautions or side effects
+    - Ensure ALL fields are populated with precise, meaningful content for any medicine or salt
+    - Fields must be clearly separated (e.g., dosage must not include uses)
+    - Uses and warnings must be non-empty arrays with 2-5 clean items (no brackets, commas, or artifacts)
+    - For unknown medicines/salts, provide informative placeholders emphasizing professional consultation
+    - Wrap the JSON in \`\`\`json\n and \n\`\`\` markers
+    - Always emphasize consulting a healthcare professional for personalized advice
+
+    KNOWLEDGE AREAS:
+    - Comprehensive medication information (generic drugs, brand names, salts)
+    - Common medical conditions and their treatments
+    - Dosage guidelines and safety precautions
+
+    Your purpose is to provide accurate, concise medication information for any medicine or salt, acting as a reliable data source.`;
+
+    // Chat History
+    let chatHistory = [];
+
+    // Validation Functions
+    function validateMedicineInput(input) {
+        const medicinePattern = /^[a-zA-Z0-9\s\-\/]+$/;
+        const lowerInput = input.toLowerCase().trim();
+        const blacklistedTerms = ['script', 'code', 'sql', 'drop', 'select', 'insert'];
+        return (
+            medicinePattern.test(input) &&
+            lowerInput.length > 2 &&
+            !blacklistedTerms.some(term => lowerInput.includes(term))
+        );
+    }
+
+    function validateImageFile(file) {
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        const allowedTypes = ['image/jpeg', 'image/png'];
+        if (!file) {
+            showToast('Please select an image file.', true);
+            return false;
+        }
+        if (!allowedTypes.includes(file.type)) {
+            showToast('Only JPEG or PNG images are allowed.', true);
+            return false;
+        }
+        if (file.size > maxSize) {
+            showToast('Image size must be less than 5MB.', true);
+            return false;
+        }
+        return true;
+    }
+
+    // Image to Base64
+    async function imageToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Show Image Preview
+    function showImagePreview(file) {
+        const preview = document.getElementById('imagePreview');
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.style.display = 'none';
+            preview.src = '';
+        }
+    }
+
+    // Show Typing Indicator
+    function showTypingIndicator() {
+        const resultDiv = document.getElementById('result');
+        const typingDiv = document.createElement("div");
+        typingDiv.classList.add("typing-indicator");
+        typingDiv.id = "typingIndicator";
+        for (let i = 0; i < 3; i++) {
+            const dot = document.createElement("div");
+            dot.classList.add("typing-dot");
+            typingDiv.appendChild(dot);
+        }
+        resultDiv.insertBefore(typingDiv, resultDiv.firstChild);
+        resultDiv.style.display = 'block';
+    }
+
+    // Remove Typing Indicator
+    function removeTypingIndicator() {
+        const typingIndicator = document.getElementById('typingIndicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+
+    // Backup Response
+    function getBackupResponse(message) {
+        return {
+            details: `${message} is not widely documented in standard medical references. Consult a healthcare professional for specific information.`,
+            dosage: `Dosage for ${message} varies and should be determined by a doctor. Follow your healthcare provider’s instructions. Always adhere to prescribed guidelines.`,
+            uses: [`Potential use of ${message} is unclear without medical guidance`, 'Consult a healthcare professional for appropriate applications'],
+            warnings: [`No specific warnings available for ${message}`, 'Consult a doctor before use to avoid potential risks']
+        };
+    }
+
+    // Gemini Text Response with Retry Logic
+    async function getGeminiTextResponse(message, retries = 3, variation = 0) {
+        const lowerMessage = message.toLowerCase().trim();
+        if (medicineDatabase[lowerMessage]) {
+            console.log(`Using local database for ${message}`);
+            return medicineDatabase[lowerMessage];
+        }
+
+        const promptVariations = [
+            `Provide precise information about the medicine or salt "${message}"`,
+            `Give detailed information on the medication or compound "${message}"`,
+            `Supply accurate data for the drug or salt "${message}" with all fields complete`
+        ];
+
+        try {
+            let contextPrompt = `${healthcarePersonality}\n\nPrevious conversation:\n`;
+            const relevantHistory = chatHistory.slice(-6);
+            for (const msg of relevantHistory) {
+                contextPrompt += `${msg.role === 'user' ? 'User' : 'Dr. Vita'}: ${msg.content}\n`;
+            }
+            contextPrompt += `\nCurrent query: ${promptVariations[variation]} in a structured JSON format:
+{
+  "details": "Brief description of the medicine or salt's purpose (1-2 sentences)",
+  "dosage": "Typical dosage instructions for adults (2-3 sentences, only dosage information)",
+  "uses": ["Condition or symptom 1", "Condition or symptom 2", ...],
+  "warnings": ["Precaution or side effect 1", "Precaution or side effect 2", ...]
+}
+Ensure ALL fields are populated with accurate, meaningful content. Details must be 1-2 sentences. Dosage must be 2-3 sentences, containing only dosage information. Uses and warnings must be arrays with 2-5 clean items (no brackets, commas, or artifacts). For unknown medicines/salts, provide placeholders like:
+{
+  "details": "Information about ${message} is limited. Consult a healthcare professional for details.",
+  "dosage": "No dosage information available for ${message}. Follow a doctor's guidance.",
+  "uses": ["No specific uses listed.", "Consult a healthcare professional."],
+  "warnings": ["No warnings available.", "Consult a doctor before use."]
+}
+Wrap the JSON in \`\`\`json\n and \n\`\`\` markers. Respond with only the JSON data, no greetings or additional text:`;
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: contextPrompt }] }]
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API request failed with status ${response.status}`);
+            }
+
+            const data = await response.json();
+            let text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+            if (!text) {
+                throw new Error('No text in API response');
+            }
+
+            // Clean up the response text
+            text = text.replace(/```json\n|\n```|```/g, '').trim();
+
+            try {
+                let parsed = JSON.parse(text);
+                let result = {
+                    details: parsed.details?.trim() || `Information about ${message} is limited. Consult a healthcare professional for details.`,
+                    dosage: parsed.dosage?.trim() || `No dosage information available for ${message}. Follow a doctor's guidance.`,
+                    uses: Array.isArray(parsed.uses) && parsed.uses.length > 0 
+                        ? parsed.uses.map(item => String(item).replace(/[$$  $$\{\},]/g, '').trim()).filter(item => item && !item.toLowerCase().includes('interact') && !item.toLowerCase().includes('avoid')).slice(0, 5)
+                        : ["No specific uses listed.", "Consult a healthcare professional."],
+                    warnings: Array.isArray(parsed.warnings) && parsed.warnings.length > 0 
+                        ? parsed.warnings.map(item => String(item).replace(/[$$  $$\{\},]/g, '').trim()).filter(item => item && !item.match(/^\w+$/)).slice(0, 5)
+                        : ["No warnings available.", "Consult a doctor before use."]
+                };
+
+                // Validate and sanitize response
+                let detailsSentences = result.details.split('. ').filter(s => s.trim() && !s.toLowerCase().includes('consult')).slice(0, 2).join('. ');
+                result.details = detailsSentences ? detailsSentences + (detailsSentences.endsWith('.') ? '' : '.') : result.details;
+                let dosageSentences = result.dosage.split('. ').filter(s => s.trim() && !s.toLowerCase().includes('consult')).slice(0, 3).join('. ');
+                result.dosage = dosageSentences ? dosageSentences + (dosageSentences.endsWith('.') ? '' : '.') : result.dosage;
+
+                // Check if the response is incomplete
+                const isIncomplete = (
+                    result.details.toLowerCase().includes('information about') ||
+                    result.dosage.toLowerCase().includes('no dosage') ||
+                    result.uses.length < 2 || result.uses.every(item => item.toLowerCase().includes('no specific') || item.toLowerCase().includes('consult')) ||
+                    result.warnings.length < 2 || result.warnings.every(item => item.toLowerCase().includes('no warnings') || item.toLowerCase().includes('consult'))
+                );
+
+                if (isIncomplete && retries > 0) {
+                    console.log(`Incomplete response, retrying with variation ${variation + 1}, ${retries} attempts left`);
+                    await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries))); // Exponential backoff
+                    return await getGeminiTextResponse(message, retries - 1, (variation + 1) % promptVariations.length);
+                }
+
+                if (isIncomplete) {
+                    console.log(`All retries exhausted, using backup response for ${message}`);
+                    return getBackupResponse(message);
+                }
+
+                console.log(`Successfully fetched data for ${message}`);
+                return result;
+            } catch (e) {
+                console.log("JSON parsing failed:", e.message);
+                throw new Error('Invalid JSON response');
+            }
+        } catch (error) {
+            console.error(`Error with Gemini API (text) for ${message}:`, error.message);
+            if (retries > 0) {
+                console.log(`Retrying API call, ${retries} attempts left, variation ${variation + 1}`);
+                await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries))); // Exponential backoff
+                return await getGeminiTextResponse(message, retries - 1, (variation + 1) % promptVariations.length);
+            }
+            console.log(`Using backup response for ${message} due to API error`);
+            return getBackupResponse(message);
+        }
+    }
+
+    // Gemini Image Response
+    async function getGeminiImageResponse(base64Image, retries = 3) {
+        try {
+            const contextPrompt = `${healthcarePersonality}\n\nCurrent query: Analyze the provided medicine package image and identify the medicine or salt. Provide information in a structured JSON format:
+{
+  "medicineName": "Identified medicine or salt name",
+  "details": "Brief description of the medicine or salt's purpose (1-2 sentences)",
+  "dosage": "Typical dosage instructions for adults (2-3 sentences, only dosage information)",
+  "uses": ["Condition or symptom 1", "Condition or symptom 2", ...],
+  "warnings": ["Precaution or side effect 1", "Precaution or side effect 2", ...]
+}
+Ensure ALL fields are populated with accurate, meaningful content. If the medicine cannot be identified, provide placeholders like:
+{
+  "medicineName": "Unknown Medicine",
+  "details": "The medicine could not be identified from the image. Consult a healthcare professional for details.",
+  "dosage": "No dosage information available. Follow a doctor's guidance.",
+  "uses": ["No specific uses listed.", "Consult a healthcare professional."],
+  "warnings": ["No warnings available.", "Consult a doctor before use."]
+}
+Wrap the JSON in \`\`\`json\n and \n\`\`\` markers. Respond with only the JSON data, no greetings or additional text:`;
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GEMINI_API_KEY}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [
+                            { text: contextPrompt },
+                            { inlineData: { data: base64Image, mimeType: "image/jpeg" } }
+                        ]
+                    }]
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API request failed with status ${response.status}`);
+            }
+
+            const data = await response.json();
+            let text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+            if (!text) {
+                throw new Error('No text in API response');
+            }
+
+            text = text.replace(/```json\n|\n```|```/g, '').trim();
+            try {
+                let parsed = JSON.parse(text);
+                let result = {
+                    medicineName: parsed.medicineName?.trim() || "Unknown Medicine",
+                    details: parsed.details?.trim() || `The medicine could not be identified from the image. Consult a healthcare professional for details.`,
+                    dosage: parsed.dosage?.trim() || `No dosage information available. Follow a doctor's guidance.`,
+                    uses: Array.isArray(parsed.uses) && parsed.uses.length > 0 
+                        ? parsed.uses.map(item => String(item).replace(/[\[\]\{\},]/g, '').trim()).filter(item => item && !item.toLowerCase().includes('interact') && !item.toLowerCase().includes('avoid')).slice(0, 5)
+                        : ["No specific uses listed.", "Consult a healthcare professional."],
+                    warnings: Array.isArray(parsed.warnings) && parsed.warnings.length > 0 
+                        ? parsed.warnings.map(item => String(item).replace(/[\[\]\{\},]/g, '').trim()).filter(item => item && !item.match(/^\w+$/)).slice(0, 5)
+                        : ["No warnings available.", "Consult a doctor before use."]
+                };
+
+                const isIncomplete = (
+                    result.medicineName.toLowerCase().includes('unknown') ||
+                    result.details.toLowerCase().includes('could not be identified') ||
+                    result.dosage.toLowerCase().includes('no dosage') ||
+                    result.uses.length < 2 || result.uses.every(item => item.toLowerCase().includes('no specific') || item.toLowerCase().includes('consult')) ||
+                    result.warnings.length < 2 || result.warnings.every(item => item.toLowerCase().includes('no warnings') || item.toLowerCase().includes('consult'))
+                );
+
+                if (isIncomplete && retries > 0) {
+                    console.log(`Incomplete response, retrying with ${retries} attempts left`);
+                    await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries)));
+                    return await getGeminiImageResponse(base64Image, retries - 1);
+                }
+
+                if (isIncomplete) {
+                    console.log(`All retries exhausted, using backup response`);
+                    return { medicineName: "Unknown Medicine", ...getBackupResponse("Unknown Medicine") };
+                }
+
+                return result;
+            } catch (e) {
+                console.log("JSON parsing failed for image:", e.message);
+                throw new Error('Invalid JSON response');
+            }
+        } catch (error) {
+            console.error("Error with Gemini API (image):", error.message);
+            if (retries > 0) {
+                console.log(`Retrying API call, ${retries} attempts left`);
+                await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries)));
+                return await getGeminiImageResponse(base64Image, retries - 1);
+            }
+            console.log(`Using backup response due to API error`);
+            return { medicineName: "Unknown Medicine", ...getBackupResponse("Unknown Medicine") };
+        }
+    }
+
+    // Analyze Medicine Image
+    async function analyzeMedicineImage() {
+        const imageInput = document.getElementById('medicineImage');
+        const file = imageInput.files[0];
+
+        if (!validateImageFile(file)) {
+            return;
+        }
+
+        showTypingIndicator();
+        showImagePreview(file);
+
+        try {
+            const base64Image = await imageToBase64(file);
+            const response = await getGeminiImageResponse(base64Image);
+
+            removeTypingIndicator();
+
+            chatHistory.push({ role: "user", content: `Image upload for medicine analysis` });
+            chatHistory.push({ role: "assistant", content: JSON.stringify(response) });
+
+            let formattedDetails = `<h3>${response.medicineName.charAt(0).toUpperCase() + response.medicineName.slice(1)}</h3>`;
+            formattedDetails += `
+                <div class="info-section">
+                    <div class="info-section-header" onclick="toggleSection(this)">
+                        <span>Medicine Details</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="info-section-content">
+                        <p>${response.details}</p>
+                    </div>
+                </div>
+                <div class="info-section">
+                    <div class="info-section-header" onclick="toggleSection(this)">
+                        <span>Recommended Dosage</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="info-section-content">
+                        <p>${response.dosage}</p>
+                    </div>
+                </div>
+                <div class="info-section">
+                    <div class="info-section-header" onclick="toggleSection(this)">
+                        <span>Problems It Can Be Used For</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="info-section-content">
+                        <ul>
+                            ${response.uses.map(use => `<li>${use}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+                <div class="info-section">
+                    <div class="info-section-header" onclick="toggleSection(this)">
+                        <span>Warnings & Precautions</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="info-section-content">
+                        <ul>
+                            ${response.warnings.map(warning => `<li>${warning}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            const detailsDiv = document.getElementById('medicineDetails');
+            const resultDiv = document.getElementById('result');
+            detailsDiv.innerHTML = formattedDetails;
+            resultDiv.style.display = 'block';
+
+            const firstSection = detailsDiv.querySelector('.info-section-header');
+            if (firstSection) {
+                toggleSection(firstSection);
+            }
+
+            if (chatHistory.length > 10) {
+                chatHistory = chatHistory.slice(chatHistory.length - 10);
+            }
+        } catch (error) {
+            console.error("Error in analyzeMedicineImage:", error.message);
+            removeTypingIndicator();
+            showToast('An error occurred while analyzing the medicine image. Please try again.', true);
+        }
+    }
+
+    // Search Medicine
+    async function searchMedicine() {
+        const medicineName = document.getElementById('medicineName').value.trim();
+        if (!medicineName) {
+            showToast('Please enter a medicine name or salt.', true);
+            return;
+        }
+
+        if (!validateMedicineInput(medicineName)) {
+            showToast('Please enter a valid medicine name or salt (e.g., Paracetamol, Disprin).', true);
+            return;
+        }
+
+        const resultDiv = document.getElementById('result');
+        const detailsDiv = document.getElementById('medicineDetails');
+
+        showTypingIndicator();
+
+        try {
+            const response = await getGeminiTextResponse(medicineName);
+
+            removeTypingIndicator();
+
+            chatHistory.push({ role: "user", content: medicineName });
+            chatHistory.push({ role: "assistant", content: JSON.stringify(response) });
+
+            let formattedDetails = `<h3>${medicineName.charAt(0).toUpperCase() + medicineName.slice(1)}</h3>`;
+            formattedDetails += `
+                <div class="info-section">
+                    <div class="info-section-header" onclick="toggleSection(this)">
+                        <span>Medicine Details</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="info-section-content">
+                        <p>${response.details}</p>
+                    </div>
+                </div>
+                <div class="info-section">
+                    <div class="info-section-header" onclick="toggleSection(this)">
+                        <span>Recommended Dosage</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="info-section-content">
+                        <p>${response.dosage}</p>
+                    </div>
+                </div>
+                <div class="info-section">
+                    <div class="info-section-header" onclick="toggleSection(this)">
+                        <span>Problems It Can Be Used For</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="info-section-content">
+                        <ul>
+                            ${response.uses.map(use => `<li>${use}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+                <div class="info-section">
+                    <div class="info-section-header" onclick="toggleSection(this)">
+                        <span>Warnings & Precautions</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="info-section-content">
+                        <ul>
+                            ${response.warnings.map(warning => `<li>${warning}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            detailsDiv.innerHTML = formattedDetails;
+            resultDiv.style.display = 'block';
+
+            const firstSection = detailsDiv.querySelector('.info-section-header');
+            if (firstSection) {
+                toggleSection(firstSection);
+            }
+
+            if (chatHistory.length > 10) {
+                chatHistory = chatHistory.slice(chatHistory.length - 10);
+            }
+        } catch (error) {
+            console.error("Error in searchMedicine:", error.message);
+            removeTypingIndicator();
+            showToast('An error occurred while fetching medicine information. Please try again.', true);
+        }
+    }
+
+    // Toggle Section
+    function toggleSection(header) {
+        const content = header.nextElementSibling;
+        const icon = header.querySelector('i');
+        content.classList.toggle('active');
+        icon.classList.toggle('active');
+    }
+
+    // Event Listeners
+    document.getElementById('medicineName').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            searchMedicine();
+        }
+    });
+
+    document.getElementById('medicineImage').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        showImagePreview(file);
+    });
+</script>
+</body>
+</html>

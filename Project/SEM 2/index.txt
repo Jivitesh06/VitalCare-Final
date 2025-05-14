@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VitalCare - Your Health Companion</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  <style>
+    /* Floating chatbot button with animation */
+    .chatbot-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      cursor: pointer;
+      z-index: 9999;
+      transition: transform 0.3s ease;
+    }
+
+    .chatbot-button:hover {
+      transform: scale(1.1);
+    }
+
+    .chatbot-button img {
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      box-shadow: 0 4px 15px rgba(0, 102, 204, 0.4);
+      border: 2px solid #0066cc;
+    }
+
+    /* Notification dot */
+    .notification-dot {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 12px;
+      height: 12px;
+      background-color: #ff4757;
+      border-radius: 50%;
+      border: 2px solid white;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Chatbot Card with improved styling */
+    .chatbot-card {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 350px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 5px 25px rgba(0, 102, 204, 0.25);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 10000;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      border: 1px solid rgba(0, 102, 204, 0.2);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .chatbot-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .chatbot-header {
+      background: linear-gradient(135deg, #0066cc, #0052a3);
+      color: white;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .chatbot-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chatbot-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chatbot-avatar i {
+      color: #0066cc;
+      font-size: 16px;
+    }
+
+    .chatbot-status {
+      display: flex;
+      align-items: center;
+      font-size: 12px;
+      gap: 5px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #4cd137;
+      border-radius: 50%;
+    }
+
+    .chatbot-header button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .chatbot-header button:hover {
+      transform: scale(1.1);
+    }
+
+    .chatbot-body {
+      padding: 15px;
+      height: 300px;
+      overflow-y: auto;
+      background: #f8faff;
+      display: flex;
+      flex-direction: column;
+      scroll-behavior: smooth;
+    }
+
+    .chatbot-body::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chatbot-body::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 102, 204, 0.3);
+      border-radius: 3px;
+    }
+
+    .chatbot-body::-webkit-scrollbar-track {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .chat-message {
+      margin: 8px 0;
+      padding: 12px 16px;
+      border-radius: 18px;
+      max-width: 85%;
+      line-height: 1.4;
+      position: relative;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .chat-message.bot {
+      background: linear-gradient(135deg, #e1ecf9, #d4e5f7);
+      align-self: flex-start;
+      color: #003366;
+      border-bottom-left-radius: 5px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-message.user {
+      background: linear-gradient(135deg, #0066cc, #0052a3);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-time {
+      font-size: 10px;
+      margin-top: 5px;
+      opacity: 0.7;
+      display: block;
+    }
+
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      margin: 8px 0;
+      padding: 8px 16px;
+      background: #e1ecf9;
+      border-radius: 18px;
+      align-self: flex-start;
+      width: fit-content;
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #0066cc;
+      border-radius: 50%;
+      margin: 0 2px;
+      animation: typingAnimation 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(1) {
+      animation-delay: 0s;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typingAnimation {
+      0%, 60%, 100% {
+        transform: translateY(0);
+      }
+      30% {
+        transform: translateY(-5px);
+      }
+    }
+
+    .chatbot-input {
+      display: flex;
+      padding: 15px;
+      gap: 10px;
+      background: white;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      align-items: center;
+    }
+
+    .chatbot-input input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 1px solid rgba(0, 102, 204, 0.3);
+      border-radius: 25px;
+      font-size: 14px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      outline: none;
+    }
+
+    .chatbot-input input:focus {
+      border-color: #0066cc;
+      box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+    }
+
+    .chatbot-input button {
+      padding: 12px;
+      background: #0066cc;
+      border: none;
+      color: white;
+      border-radius: 50%;
+      cursor: pointer;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .chatbot-input button:hover {
+      background: #0052a3;
+      transform: scale(1.05);
+    }
+
+    .chatbot-input button:active {
+      transform: scale(0.95);
+    }
+
+    .chatbot-input button i {
+      font-size: 18px;
+    }
+
+    /* Quick suggestions */
+    .quick-suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .suggestion-chip {
+      background: rgba(0, 102, 204, 0.1);
+      color: #0066cc;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      border: 1px solid rgba(0, 102, 204, 0.2);
+      white-space: nowrap;
+    }
+
+    .suggestion-chip:hover {
+      background: rgba(0, 102, 204, 0.2);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 480px) {
+      .chatbot-card {
+        width: calc(100% - 40px);
+        right: 20px;
+        left: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="logo">VitalCare</div>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="health-check.html">Health Check</a></li>
+        <li><a href="medicine-info.html">Medicine Info</a></li>
+        <li><a href="reminders.html">Reminders</a></li>
+        <li id="authLink"></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1>Your Health, Simplified</h1>
+        <p>AI-powered healthcare management system for personalized care</p>
+        <a href="health-check.html" class="btn btn-primary">Get Started</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="container">
+      <h2 class="section-title">Our Services</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <i class="fas fa-stethoscope"></i>
+          <h3>AI Symptom Checker</h3>
+          <p>Analyzes Symptoms and predicts health conditions.</p>
+          <a href="health-check.html" class="btn btn-secondary">Learn More</a>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-capsules"></i>
+          <h3>Medicine Scanner</h3>
+          <p>Scan medicine packages to get detailed information</p>
+          <a href="medicine-info.html" class="btn btn-secondary">Learn More</a>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-bell"></i>
+          <h3>Medication Reminders</h3>
+          <p>Set up and manage your medication schedule</p>
+          <a href="reminders.html" class="btn btn-secondary">Learn More</a>
+        </div>
+      </div>
+      <div class="features-grid" style="margin-top: 20px;">
+        <div class="feature-card">
+          <i class="fas fa-barcode"></i>
+          <h3>QR Scanner</h3>
+          <p>Get instant AI-powered health analysis and recommendations</p>
+          <a href="QrS.html" class="btn btn-secondary">Learn More</a>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-capsules"></i>
+          <h3>Medical Visual Analysis</h3>
+          <p>Examine Skin and eye images for basic health insights</p>
+          <a href="medicine-info.html" class="btn btn-secondary">Learn More</a>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-heartbeat"></i>
+          <h3>Personalized AI Health Insights</h3>
+          <p>Receive tailored health recommendations</p>
+          <a href="reminders.html" class="btn btn-secondary">Learn More</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Button -->
+    <div class="chatbot-button" id="chatbotToggle">
+      <img src="iconbot.png" alt="Chatbot" />
+      <div class="notification-dot"></div>
+    </div>
+
+    <!-- Chatbot Card -->
+    <div class="chatbot-card" id="chatCard" style="display: none;">
+      <div class="chatbot-header">
+        <div class="chatbot-header-left">
+          <div class="chatbot-avatar">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div>
+            <span>Dr. Vita</span>
+            <div class="chatbot-status">
+              <div class="status-dot"></div>
+              <span>Online</span>
+            </div>
+          </div>
+        </div>
+        <button id="chatbotClose"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="chatbot-body" id="chatBody">
+        <div class="chat-message bot">
+          Hi there! 👋 I'm Dr. Vita, your personal health companion. I'm here to listen and support you on your health journey. How can I help you today? 💙
+          <span class="chat-time">Just now</span>
+        </div>
+        <div class="quick-suggestions">
+          <div class="suggestion-chip" data-query="What symptoms indicate COVID-19?">COVID-19 symptoms</div>
+          <div class="suggestion-chip" data-query="How do I set medication reminders?">Medication reminders</div>
+          <div class="suggestion-chip" data-query="How does the symptom checker work?">Symptom checker help</div>
+          <div class="suggestion-chip" data-query="What's a balanced diet for heart health?">Heart health diet</div>
+        </div>
+      </div>
+      <div class="chatbot-input">
+        <input type="text" id="userInput" placeholder="Type your health question..." />
+        <button id="sendBtn"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>VitalCare</h3>
+          <p>Your personal health companion</p>
+        </div>
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="health-check.html">Health Check</a></li>
+            <li><a href="medicine-info.html">Medicine Info</a></li>
+            <li><a href="reminders.html">Reminders</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p>Email: support@vitalcare.com</p>
+          <p>Phone: +1 234 567 890</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 VitalCare. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JS Script for login and chatbot -->
+  <script>
+    const authLink = document.getElementById('authLink');
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+    if (currentUser.email) {
+      authLink.innerHTML = '<a href="profile.html">Profile</a>';
+    } else {
+      authLink.innerHTML = '<a href="login.html" class="btn btn-primary">Login / SignUp</a>';
+    }
+
+    // Chatbot Logic
+    const chatbotToggle = document.getElementById("chatbotToggle");
+    const chatCard = document.getElementById("chatCard");
+    const sendBtn = document.getElementById("sendBtn");
+    const userInput = document.getElementById("userInput");
+    const chatBody = document.getElementById("chatBody");
+    const chatbotClose = document.getElementById("chatbotClose");
+    const suggestionChips = document.querySelectorAll(".suggestion-chip");
+
+    // Chat history to maintain context
+    let chatHistory = [];
+
+    // Health-related emojis for responses
+    const healthEmojis = {
+      greeting: ["👋", "💙", "😊", "🌟"],
+      positive: ["👍", "💪", "🌱", "✨", "🌈", "🙌"],
+      medical: ["❤️", "🫀", "🧠", "👨‍⚕️", "👩‍⚕️", "🏥", "💊", "💉", "🩺"],
+      wellness: ["🧘‍♀️", "🍎", "🥦", "🥗", "💧", "🌿", "🌞", "😴"],
+      sympathy: ["🤗", "💭", "🙏", "💙", "🌷"],
+      caution: ["⚠️", "🔍", "📝", "📊", "🔔"]
+    };
+
+    // Get random emojis from categories
+    function getRandomEmojis(categories, count = 1) {
+      let result = [];
+      for (const category of categories) {
+        if (healthEmojis[category]) {
+          const emojis = healthEmojis[category];
+          const randomIndex = Math.floor(Math.random() * emojis.length);
+          result.push(emojis[randomIndex]);
+          if (result.length >= count) break;
+        }
+      }
+      return result.join(" ");
+    }
+
+    // Healthcare personality definition with enhanced empathy and calmness
+    const healthcarePersonality = `You are Dr. Vita, a deeply empathetic and compassionate healthcare virtual assistant with a calm, reassuring presence.
+
+PERSONALITY TRAITS:
+- Exceptionally empathetic: Show genuine understanding and compassion for health concerns, acknowledge emotions, and validate feelings
+- Calming presence: Use a soothing, reassuring tone that helps reduce anxiety about health concerns
+- Supportive companion: Offer encouragement and emotional support throughout the health journey
+- Patient-centered: Focus on the individual's needs and concerns with personalized attention
+- Professional yet warm: Balance medical knowledge with a friendly, approachable demeanor
+- Thoughtful listener: Demonstrate that you truly hear and understand the person's concerns
+
+COMMUNICATION STYLE:
+- Use gentle, compassionate language that shows you care deeply about the person's wellbeing
+- Include appropriate health-related emojis to add warmth to your responses
+- Begin responses with empathetic acknowledgments before providing information
+- Use phrases like "I understand how you might feel" and "It's completely natural to be concerned"
+- End messages with supportive encouragement and gentle reassurance
+- Use a conversational, friendly tone while maintaining professionalism
+
+GUIDELINES:
+- When discussing symptoms, first acknowledge concerns with empathy before providing information
+- For sensitive topics, show extra compassion and emotional support
+- Always prioritize emotional wellbeing alongside physical health
+- Provide reassurance while being honest about the importance of professional care
+- For anxiety-inducing topics, use especially calming language and reassurance
+- When uncertain, acknowledge limitations with gentle honesty
+- For emergencies, maintain a calm tone while clearly emphasizing the urgency of seeking help
+
+KNOWLEDGE AREAS:
+- General health and wellness information with a holistic approach
+- Basic understanding of common medical conditions and their emotional impacts
+- Preventive healthcare measures with an encouraging approach
+- Healthy lifestyle recommendations focused on wellbeing
+- General medication information with empathetic context
+- Mental health support and stress management techniques
+
+Remember that your purpose is to be a calming, supportive presence while providing helpful health information. Always emphasize that you're there to support them, but professional medical advice is essential for specific concerns.`;
+
+    // Show chatbot with animation
+    chatbotToggle.addEventListener("click", () => {
+      chatCard.style.display = "flex";
+      // Add a small delay before adding the visible class for the animation to work
+      setTimeout(() => {
+        chatCard.classList.add("visible");
+      }, 10);
+      // Remove notification dot when chat is opened
+      document.querySelector(".notification-dot").style.display = "none";
+    });
+
+    // Hide chatbot with animation
+    chatbotClose.addEventListener("click", () => {
+      chatCard.classList.remove("visible");
+      setTimeout(() => {
+        chatCard.style.display = "none";
+      }, 300); // Match this with the CSS transition duration
+    });
+
+    // Handle suggestion chips
+    suggestionChips.forEach(chip => {
+      chip.addEventListener("click", () => {
+        const query = chip.getAttribute("data-query");
+        userInput.value = query;
+        sendMessage();
+      });
+    });
+
+    // Send message on Enter key
+    userInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        sendMessage();
+      }
+    });
+
+    // Send button click
+    sendBtn.addEventListener("click", sendMessage);
+
+    // Function to send message
+    async function sendMessage() {
+      const message = userInput.value.trim();
+      if (message !== "") {
+        appendMessage("user", message);
+        userInput.value = "";
+        
+        // Add user message to chat history
+        chatHistory.push({ role: "user", content: message });
+        
+        // Show typing indicator
+        showTypingIndicator();
+        
+        // Get response with slight delay to show typing effect
+        setTimeout(async () => {
+          const botResponse = await getGeminiResponse(message);
+          // Remove typing indicator
+          removeTypingIndicator();
+          // Add bot response
+          appendMessage("bot", botResponse);
+          
+          // Add bot response to chat history
+          chatHistory.push({ role: "assistant", content: botResponse });
+          
+          // Limit chat history to last 10 messages to avoid token limits
+          if (chatHistory.length > 10) {
+            chatHistory = chatHistory.slice(chatHistory.length - 10);
+          }
+        }, 1500);
+      }
+    }
+
+    // Show typing indicator
+    function showTypingIndicator() {
+      const typingDiv = document.createElement("div");
+      typingDiv.classList.add("typing-indicator");
+      typingDiv.id = "typingIndicator";
+      
+      for (let i = 0; i < 3; i++) {
+        const dot = document.createElement("div");
+        dot.classList.add("typing-dot");
+        typingDiv.appendChild(dot);
+      }
+      
+      chatBody.appendChild(typingDiv);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    // Remove typing indicator
+    function removeTypingIndicator() {
+      const typingIndicator = document.getElementById("typingIndicator");
+      if (typingIndicator) {
+        typingIndicator.remove();
+      }
+    }
+
+    // Function to add health emojis to responses
+    function addHealthEmojis(text) {
+      // Detect the type of response to add appropriate emojis
+      const lowerText = text.toLowerCase();
+      
+      // Determine which emoji categories to use based on content
+      let emojiCategories = [];
+      
+      if (lowerText.includes("hello") || lowerText.includes("hi") || lowerText.includes("welcome") || lowerText.includes("greetings")) {
+        emojiCategories.push("greeting");
+      }
+      
+      if (lowerText.includes("exercise") || lowerText.includes("healthy") || lowerText.includes("nutrition") || 
+          lowerText.includes("diet") || lowerText.includes("water") || lowerText.includes("sleep")) {
+        emojiCategories.push("wellness");
+      }
+      
+      if (lowerText.includes("doctor") || lowerText.includes("hospital") || lowerText.includes("medication") || 
+          lowerText.includes("medicine") || lowerText.includes("treatment") || lowerText.includes("health")) {
+        emojiCategories.push("medical");
+      }
+      
+      if (lowerText.includes("sorry") || lowerText.includes("understand") || lowerText.includes("feel") || 
+          lowerText.includes("worry") || lowerText.includes("anxiety") || lowerText.includes("stress")) {
+        emojiCategories.push("sympathy");
+      }
+      
+      if (lowerText.includes("important") || lowerText.includes("caution") || lowerText.includes("warning") || 
+          lowerText.includes("emergency") || lowerText.includes("consult")) {
+        emojiCategories.push("caution");
+      }
+      
+      if (lowerText.includes("good") || lowerText.includes("great") || lowerText.includes("excellent") || 
+          lowerText.includes("improve") || lowerText.includes("better") || lowerText.includes("progress")) {
+        emojiCategories.push("positive");
+      }
+      
+      // If no specific categories were detected, use a mix
+      if (emojiCategories.length === 0) {
+        emojiCategories = ["greeting", "medical", "positive"];
+      }
+      
+      // Add 1-2 emojis at the beginning
+      const startEmoji = getRandomEmojis(emojiCategories, 1);
+      
+      // Add 1-2 emojis at the end
+      const endEmoji = getRandomEmojis(emojiCategories, 1);
+      
+      // Add emojis within the text for longer responses
+      let modifiedText = text;
+      if (text.length > 100) {
+        // Find a good spot to add an emoji (after a sentence)
+        const sentences = text.split('. ');
+        if (sentences.length > 2) {
+          const randomIndex = Math.floor(Math.random() * (sentences.length - 1)) + 1;
+          const midEmoji = getRandomEmojis(emojiCategories, 1);
+          sentences[randomIndex] = sentences[randomIndex] + ' ' + midEmoji + ' ';
+          modifiedText = sentences.join('. ');
+        }
+      }
+      
+      return startEmoji + " " + modifiedText + " " + endEmoji;
+    }
+
+    // Get response from Gemini API with healthcare personality
+    async function getGeminiResponse(message) {
+      try {
+        // Create a context-aware prompt that includes the healthcare personality and chat history
+        let contextPrompt = healthcarePersonality + "\n\nPrevious conversation:\n";
+        
+        // Add the last few messages from chat history for context
+        const relevantHistory = chatHistory.slice(-6); // Last 6 messages for context
+        for (const msg of relevantHistory) {
+          contextPrompt += `${msg.role === 'user' ? 'User' : 'Dr. Vita'}: ${msg.content}\n`;
+        }
+        
+        // Add the current query
+        contextPrompt += `\nCurrent query: ${message}\n\nPlease respond as Dr. Vita with empathy, calmness, and support:`;
+        
+        const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyBhNWn2lnOOC8Gu6wdWGV8EleRqEAFVxIs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: contextPrompt }] }]
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          let text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          
+          if (text) {
+            // Add health emojis to the response
+            text = addHealthEmojis(text);
+            return text;
+          } else {
+            return "I understand you're looking for health information, and I want to help. 💙 Could you please try rephrasing your question? I'm here to support you on your health journey. 🌱";
+          }
+        } else {
+          return "I'm truly sorry you're experiencing this issue. 💙 Our system seems to be having a temporary problem. Please try again in a moment, and know that I'm here to support your health needs when you return. 🙏";
+        }
+      } catch (error) {
+        console.error("Error with Gemini API:", error);
+        return "I sincerely apologize for the inconvenience. 💙 We're experiencing a technical issue right now. Please know that your health concerns are important to me, and I'll be here to assist you when the service is back up. 🌷 In the meantime, for any urgent concerns, please contact your healthcare provider directly.";
+      }
+    }
+
+    // Append message to chat
+    function appendMessage(sender, text) {
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("chat-message", sender);
+      
+      // Main message text
+      msgDiv.textContent = text;
+      
+      // Add timestamp
+      const timeSpan = document.createElement("span");
+      timeSpan.classList.add("chat-time");
+      const now = new Date();
+      timeSpan.textContent = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+      msgDiv.appendChild(timeSpan);
+      
+     // chatBody.appendChild("0");
+      msgDiv.appendChild(timeSpan);
+      
+      chatBody.appendChild(msgDiv);
+      chatBody.scrollTop = chatBody.scrollHeight;
+      
+      // If this is a bot message, maybe show new suggestions
+      if (sender === "bot" && Math.random() > 0.5) {
+        showNewSuggestions();
+      }
+    }
+
+    // Show new contextual suggestions based on conversation
+    function showNewSuggestions() {
+      // Remove old suggestions if they exist
+      const oldSuggestions = chatBody.querySelector(".quick-suggestions");
+      if (oldSuggestions) {
+        oldSuggestions.remove();
+      }
+      
+      // Create new suggestions
+      const suggestionsDiv = document.createElement("div");
+      suggestionsDiv.classList.add("quick-suggestions");
+      
+      // Healthcare-specific suggestions
+      const healthSuggestions = [
+        { text: "Daily health tips", query: "Give me some daily health tips" },
+        { text: "Medicine interactions", query: "How do I check medicine interactions?" },
+        { text: "Heart-healthy diet", query: "What's a healthy diet for heart health?" },
+        { text: "Exercise benefits", query: "What are the benefits of regular exercise?" },
+        { text: "Sleep improvement", query: "How can I improve my sleep quality?" },
+        { text: "Stress management", query: "What are effective stress management techniques?" },
+        { text: "Headache remedies", query: "What can help with headaches?" },
+        { text: "Immune system boost", query: "How can I strengthen my immune system?" },
+        { text: "Mental wellness", query: "Tips for maintaining mental wellness" }
+      ];
+      
+      // Select 3-4 random suggestions
+      const selectedSuggestions = [];
+      const numSuggestions = Math.floor(Math.random() * 2) + 3; // 3-4 suggestions
+      
+      while (selectedSuggestions.length < numSuggestions && healthSuggestions.length > 0) {
+        const randomIndex = Math.floor(Math.random() * healthSuggestions.length);
+        selectedSuggestions.push(healthSuggestions[randomIndex]);
+        healthSuggestions.splice(randomIndex, 1);
+      }
+      
+      selectedSuggestions.forEach(suggestion => {
+        const chip = document.createElement("div");
+        chip.classList.add("suggestion-chip");
+        chip.textContent = suggestion.text;
+        chip.setAttribute("data-query", suggestion.query);
+        
+        chip.addEventListener("click", () => {
+          userInput.value = suggestion.query;
+          sendMessage();
+        });
+        
+        suggestionsDiv.appendChild(chip);
+      });
+      
+      chatBody.appendChild(suggestionsDiv);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    // Auto-open chatbot after 5 seconds with a welcome message
+    setTimeout(() => {
+      if (chatCard.style.display === "none") {
+        chatbotToggle.click();
+      }
+    }, 5000);
+  </script>
+</body>
+</html>

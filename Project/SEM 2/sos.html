@@ -1,0 +1,36 @@
+<div class="sos-button" id="sosButton">SOS</div>
+<div class="emergency-modal" id="emergencyModal">
+  <div class="emergency-modal-content">
+    <button class="close-modal" id="closeModal"><i class="fas fa-times"></i></button>
+    <div class="emergency-modal-header">
+      <i class="fas fa-exclamation-triangle"></i>
+      <h2>Emergency SOS</h2>
+    </div>
+    <div class="emergency-modal-body">
+      <p>This will send an emergency alert with your current location to your emergency contacts.</p>
+      <div class="emergency-form">
+        <div class="form-group">
+          <label for="emergencyMessage">Emergency Message</label>
+          <textarea id="emergencyMessage" rows="3" placeholder="Describe your emergency situation..."></textarea>
+        </div>
+        <div class="emergency-contacts">
+          <h3>Emergency Contacts</h3>
+          <div class="contact-list" id="contactList"></div>
+          <button class="add-contact-btn" id="addContactBtn">
+            <i class="fas fa-plus"></i> Add Emergency Contact
+          </button>
+        </div>
+        <div class="emergency-buttons">
+          <button class="btn-cancel" id="cancelSos">Cancel</button>
+          <button class="btn-send-sos" id="sendSosBtn">
+            <i class="fas fa-paper-plane"></i> Send Emergency Alert
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast-notification" id="toastNotification">
+  <i class="fas fa-check-circle"></i>
+  <span class="toast-message" id="toastMessage">Emergency alert sent successfully!</span>
+</div>

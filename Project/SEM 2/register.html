@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - VitalCare</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .register {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg,#cdd4d4, #fafbfc);
+            padding: 20px;
+        }
+        .register-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .register-logo {
+            font-size: 36px;
+            font-weight: bold;
+            color: #0066cc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .register-logo i {
+            font-size: 32px;
+        }
+        .register-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .form-group {
+            position: relative;
+        }
+        .form-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #0066cc;
+        }
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        .terms {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+        }
+        .terms a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        .terms a:hover {
+            text-decoration: underline;
+        }
+        .register-button {
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .register-button:hover {
+            background-color: #0055aa;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .login-link a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+            color: red;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <section class="register">
+        <div class="register-container">
+            <div class="register-header">
+                <div class="login-logo logo">
+                    <i class="fas fa-heartbeat"></i>
+                    VitalCare
+                </div>
+                <h2>Create Account</h2>
+                <p>Join VirtualCare to manage your health</p>
+            </div>
+            <form class="register-form" id="registerForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" placeholder="First Name" required>
+                    </div>
+                    <div class="form-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" placeholder="Last Name" required>
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" placeholder="Email Address" required>
+                </div>
+                <div class="form-group full-width">
+                    <i class="fas fa-phone"></i>
+                    <input type="tel" placeholder="Phone Number" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="Password" required>
+                    </div>
+                    <div class="form-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+                    </div>
+                </div>
+                <div class="terms">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+                </div>
+                <button type="submit" class="register-button">Create Account</button>
+                <div class="error-message" id="errorMessage"></div>
+            </form>
+            <div class="login-link">
+                Already have an account? <a href="login.html">Login here</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.querySelector('#registerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const errorMessage = document.getElementById('errorMessage');
+    errorMessage.textContent = '';
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const firstName = document.querySelector('input[placeholder="First Name"]').value.trim();
+    const lastName = document.querySelector('input[placeholder="Last Name"]').value.trim();
+    const phone = document.querySelector('input[placeholder="Phone Number"]').value.trim();
+
+    console.log({ email, password, firstName, lastName, phone }); // Debug log
+
+    if (!email || !password || !confirmPassword || !firstName || !lastName || !phone) {
+        errorMessage.textContent = 'All fields are required!';
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        errorMessage.textContent = 'Passwords do not match!';
+        return;
+    }
+
+    if (password.length < 6) {
+        errorMessage.textContent = 'Password must be at least 6 characters long!';
+        return;
+    }
+
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    if (users[email]) {
+        errorMessage.textContent = 'Email already registered!';
+        return;
+    }
+
+    users[email] = { email, password, firstName, lastName, phone };
+    try {
+        localStorage.setItem('users', JSON.stringify(users));
+        alert('Registration successful! Please login.');
+        window.location.href = 'login.html';
+    } catch (error) {
+        errorMessage.textContent = 'Error saving data. Please try again.';
+        console.error('LocalStorage error:', error);
+    }
+});   </script>
+</body>
+</html>
